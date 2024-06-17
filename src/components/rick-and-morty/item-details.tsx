@@ -1,5 +1,6 @@
 import { StarredIcon } from '@/components/common/starred-icon';
-import { Character, Gender, Status, UserCharacter } from '@/types/character';
+import { useRickAndMorty } from '@/contexts/rick-and-morty-context';
+import { Gender, Status, UserCharacter } from '@/types/character';
 import Image from 'next/image';
 
 const RickAndMortyListItem = ({
@@ -18,30 +19,18 @@ const RickAndMortyListItem = ({
 };
 
 export const RickAndMortyItemDetails = () => {
-  const userCharacter: UserCharacter = {
-    id: '1',
-    isFavorite: true,
-    character: {
-      id: '136',
-      name: 'Rick Sanchez',
-      species: 'Human',
-      status: 'Alive' as Status,
-      type: '',
-      gender: 'Male' as Gender,
-      origin: 'Earth (C-137)',
-      location: 'Citadel of Ricks',
-      image: 'https://rickandmortyapi.com/api/character/avatar/1.jpeg',
-    },
-  };
+  const { selectedUserCharacter } = useRickAndMorty();
 
-  const { id, name, image, ...character } = userCharacter.character;
+  if (!selectedUserCharacter.id) return null;
+
+  const { id, name, image, ...character } = selectedUserCharacter?.character;
 
   return (
     <div className='flex flex-col  space-y w-full px-20'>
       <div className='w-[75px] h-[75px] rounded-full'>
         <div className='relative w-[75px] h-[75px]'>
           <Image
-            src='https://rickandmortyapi.com/api/character/avatar/1.jpeg'
+            src={image}
             alt='Character Avatar'
             className='object-cover rounded-full'
             width={75}

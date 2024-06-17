@@ -1,13 +1,10 @@
-import type { Metadata } from 'next';
+'use client';
+
 import { Inter } from 'next/font/google';
 import './globals.css';
+import { RickAndMortyProvider } from '@/contexts/rick-and-morty-context';
 
 const inter = Inter({ subsets: ['latin'] });
-
-export const metadata: Metadata = {
-  title: 'Rick and Morty App',
-};
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -15,7 +12,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <body className={inter.className}>{children}</body>
+      <RickAndMortyProvider>
+        <body className={inter.className}>{children}</body>
+      </RickAndMortyProvider>
     </html>
   );
 }

@@ -14,7 +14,8 @@ export const RickAndMortyListItem = ({
   isFavorite,
 }: RickAndMortyListItemProps) => {
   return (
-    <div className='flex flex-row pl-2 justify-center bg-[#EEE3FF] rounded h-[74px]'>
+    // <div className='flex flex-row pl-2 justify-center bg-[#EEE3FF] rounded h-[74px]'>
+    <div className='flex flex-row pl-2 justify-center rounded h-[74px] cursor-pointer'>
       <div className='flex items-center space-x-4'>
         <div className='w-[32px] h-[32px] bg-gray-300 rounded-full overflow-hidden'>
           <Image
@@ -25,8 +26,8 @@ export const RickAndMortyListItem = ({
             height={32}
           />
         </div>
-        <div>
-          <h3 className='text-lg font-semibold'>{name}</h3>
+        <div className=''>
+          <h3 className='text-lg font-semibold truncate '>{name}</h3>
           <p className='text-sm text-gray-500'>{species}</p>
         </div>
       </div>

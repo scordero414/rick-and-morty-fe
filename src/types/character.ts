@@ -28,3 +28,11 @@ export enum Gender {
   GENDERLESS = 'Genderless',
   UNKNOWN = 'Unknown',
 }
+
+export type GetUserCharactersQueryParameters = Partial<{
+  userId: number;
+  species: string;
+  status: Status;
+  gender: Gender;
+  name: string;
+}>;

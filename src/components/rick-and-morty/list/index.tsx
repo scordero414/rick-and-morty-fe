@@ -1,37 +1,23 @@
 import { RickAndMortyListItem } from '@/components/rick-and-morty/list/list-item';
-import { Character, Gender, Status, UserCharacter } from '@/types/character';
+import { useRickAndMorty } from '@/contexts/rick-and-morty-context';
+import { Gender, Status, UserCharacter } from '@/types/character';
 import { useMemo } from 'react';
 
 export const RickAndMortyList = () => {
-  const characters: UserCharacter[] = useMemo(
-    () => [
-      {
-        id: '1',
-        isFavorite: true,
-        character: {
-          id: '136',
-          name: 'Rick Sanchez',
-          status: 'Alive' as Status,
-          species: 'Human',
-          type: '',
-          gender: 'Male' as Gender,
-          origin: 'Earth (C-137)',
-          location: 'Citadel of Ricks',
-          image: 'https://rickandmortyapi.com/api/character/avatar/1.jpeg',
-        },
-      },
-    ],
-    []
-  );
+  const { userCharacters, selectUserCharacter } = useRickAndMorty();
 
   const favoritesCharacters = useMemo(
-    () => characters.filter(({ isFavorite }) => isFavorite),
-    [characters]
+    () => userCharacters.filter(({ isFavorite }) => isFavorite),
+    [userCharacters]
   );
   const availableCharacters = useMemo(
-    () => characters.filter(({ isFavorite }) => !isFavorite),
-    [characters]
+    () => userCharacters.filter(({ isFavorite }) => !isFavorite),
+    [userCharacters]
   );
+
+  const handleSelectUserCharacter = (userCharacter: UserCharacter) => {
+    selectUserCharacter(userCharacter);
+  };
 
   return (
     <div className=' py-10 divide-y'>
@@ -39,16 +25,30 @@ export const RickAndMortyList = () => {
         {`STARRED CHARACTERS (${favoritesCharacters.length})`}
       </p>
       <div className='flex flex-col divide-y-2 '>
-        {favoritesCharacters.map(({ character }) => (
-          <RickAndMortyListItem key={character.id} {...character} isFavorite />
+        {favoritesCharacters.map((userCharacter) => (
+          <div
+            key={userCharacter.id}
+            onClick={() => {
+              handleSelectUserCharacter(userCharacter);
+            }}
+          >
+            <RickAndMortyListItem {...userCharacter.character} isFavorite />
+          </div>
         ))}
       </div>
       <p className='text-xs font-semibold text-[#6B7280] pl-3 tracking-wider py-5'>
         {`CHARACTERS (${availableCharacters.length})`}
       </p>
       <div className='flex flex-col divide-y-2 '>
-        {availableCharacters.map(({ character }) => (
-          <RickAndMortyListItem key={character.id} {...character} />
+        {availableCharacters.map((userCharacter) => (
+          <div
+            key={userCharacter.id}
+            onClick={() => {
+              handleSelectUserCharacter(userCharacter);
+            }}
+          >
+            <RickAndMortyListItem {...userCharacter.character} />
+          </div>
         ))}
       </div>
     </div>
