@@ -1,6 +1,6 @@
 import { RickAndMortyListItem } from '@/components/rick-and-morty/list/list-item';
 import { useRickAndMorty } from '@/contexts/rick-and-morty-context';
-import { Gender, Status, UserCharacter } from '@/types/character';
+import { UserCharacter } from '@/types/character';
 import { useMemo } from 'react';
 
 export const RickAndMortyList = () => {
@@ -36,7 +36,7 @@ export const RickAndMortyList = () => {
             <RickAndMortyListItem
               {...userCharacter}
               isFavorite
-              isSelected={userCharacter.id === selectedUserCharacter.id}
+              isSelected={userCharacter.id === selectedUserCharacter?.id}
             />
           </div>
         ))}
@@ -54,7 +54,7 @@ export const RickAndMortyList = () => {
           >
             <RickAndMortyListItem
               {...userCharacter}
-              isSelected={userCharacter.id === selectedUserCharacter.id}
+              isSelected={userCharacter.id === selectedUserCharacter?.id}
             />
           </div>
         ))}

@@ -13,7 +13,7 @@ import React, {
   useMemo,
 } from 'react';
 
-const callGraphqlApi = async (query: string) => {
+export const callGraphqlApi = async (query: string) => {
   const request = await fetch('http://localhost:4000/api', {
     method: 'POST',
     headers: {
@@ -33,6 +33,8 @@ const RickAndMortyContext = createContext({
   userCharacters: [] as UserCharacter[],
   refetchCharacters: () => {},
   changeFavorite: (userCharacterId: string, isFavorite: boolean) => {},
+  deleteCharacter: (userCharacterId: string) => {},
+  addCommentToCharacter: (userCharacterId: string, comment: string) => {},
 });
 
 export const useRickAndMorty = () => useContext(RickAndMortyContext);
@@ -139,6 +141,28 @@ export const RickAndMortyProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
+  const deleteCharacter = (userCharacterId: string) => {
+    callGraphqlApi(`
+      mutation SoftDeleteUserCharacter {
+        softDeleteUserCharacter(userCharacterId: ${userCharacterId})
+      }
+    `).then(() => {
+      refetchCharacters();
+    });
+  };
+
+  const addCommentToCharacter = (userCharacterId: string, comment: string) => {
+    callGraphqlApi(`
+      mutation AddComment {
+        addComment(userCharacterId: ${userCharacterId}, commentText: "${comment}") {
+            id
+        }
+      }
+    `).then(() => {
+      console.log('Comment added');
+    });
+  };
+
   return (
     <RickAndMortyContext.Provider
       value={{
@@ -148,6 +172,8 @@ export const RickAndMortyProvider = ({ children }: { children: ReactNode }) => {
         selectUserCharacter,
         refetchCharacters,
         changeFavorite,
+        deleteCharacter,
+        addCommentToCharacter,
       }}
     >
       {children}
