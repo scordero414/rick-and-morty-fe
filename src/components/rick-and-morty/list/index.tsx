@@ -4,7 +4,8 @@ import { Gender, Status, UserCharacter } from '@/types/character';
 import { useMemo } from 'react';
 
 export const RickAndMortyList = () => {
-  const { userCharacters, selectUserCharacter } = useRickAndMorty();
+  const { userCharacters, selectUserCharacter, selectedUserCharacter } =
+    useRickAndMorty();
 
   const favoritesCharacters = useMemo(
     () => userCharacters.filter(({ isFavorite }) => isFavorite),
@@ -32,7 +33,11 @@ export const RickAndMortyList = () => {
               handleSelectUserCharacter(userCharacter);
             }}
           >
-            <RickAndMortyListItem {...userCharacter.character} isFavorite />
+            <RickAndMortyListItem
+              {...userCharacter}
+              isFavorite
+              isSelected={userCharacter.id === selectedUserCharacter.id}
+            />
           </div>
         ))}
       </div>
@@ -47,7 +52,10 @@ export const RickAndMortyList = () => {
               handleSelectUserCharacter(userCharacter);
             }}
           >
-            <RickAndMortyListItem {...userCharacter.character} />
+            <RickAndMortyListItem
+              {...userCharacter}
+              isSelected={userCharacter.id === selectedUserCharacter.id}
+            />
           </div>
         ))}
       </div>

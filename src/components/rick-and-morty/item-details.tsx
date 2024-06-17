@@ -37,7 +37,10 @@ export const RickAndMortyItemDetails = () => {
             height={75}
           />
           <div className='absolute bottom-0 right-[-10px]'>
-            <StarredIcon isFavorite={true} />
+            <StarredIcon
+              userCharacterId={selectedUserCharacter.id}
+              isFavorite={selectedUserCharacter.isFavorite}
+            />
           </div>
         </div>
       </div>

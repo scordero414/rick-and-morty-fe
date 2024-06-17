@@ -1,5 +1,6 @@
 import { StarredIcon } from '@/components/common/starred-icon';
-import { Character } from '@/types/character';
+import { useRickAndMorty } from '@/contexts/rick-and-morty-context';
+import { Character, UserCharacter } from '@/types/character';
 
 import Image from 'next/image';
 
@@ -8,14 +9,18 @@ interface RickAndMortyListItemProps extends Character {
 }
 
 export const RickAndMortyListItem = ({
-  name,
-  species,
-  image,
+  character: { name, species, image },
   isFavorite,
-}: RickAndMortyListItemProps) => {
+  isSelected,
+  id,
+}: UserCharacter & { isSelected: boolean }) => {
   return (
-    // <div className='flex flex-row pl-2 justify-center bg-[#EEE3FF] rounded h-[74px]'>
-    <div className='flex flex-row pl-2 justify-center rounded h-[74px] cursor-pointer'>
+    // <div className='flex flex-row pl-2 justify-center  rounded h-[74px]'>
+    <div
+      className={`flex flex-row pl-2 justify-center rounded h-[74px] cursor-pointer ${
+        isSelected ? 'bg-[#EEE3FF]' : ''
+      }`}
+    >
       <div className='flex items-center space-x-4'>
         <div className='w-[32px] h-[32px] bg-gray-300 rounded-full overflow-hidden'>
           <Image
@@ -32,7 +37,7 @@ export const RickAndMortyListItem = ({
         </div>
       </div>
       <div className='ml-auto mr-2 content-center'>
-        <StarredIcon isFavorite={isFavorite} />
+        <StarredIcon userCharacterId={id} isFavorite={isFavorite} />
       </div>
     </div>
   );

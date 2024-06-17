@@ -13,11 +13,26 @@ import React, {
   useMemo,
 } from 'react';
 
+const callGraphqlApi = async (query: string) => {
+  const request = await fetch('http://localhost:4000/api', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+    },
+    body: JSON.stringify({ query }),
+  });
+
+  return await request.json();
+};
+
 const RickAndMortyContext = createContext({
   selectedUserCharacter: {} as UserCharacter,
   selectUserCharacter: (userCharacter: UserCharacter) => {},
   updateFilters: (filters: GetUserCharactersQueryParameters) => {},
   userCharacters: [] as UserCharacter[],
+  refetchCharacters: () => {},
+  changeFavorite: (userCharacterId: string, isFavorite: boolean) => {},
 });
 
 export const useRickAndMorty = () => useContext(RickAndMortyContext);
@@ -31,7 +46,7 @@ export const RickAndMortyProvider = ({ children }: { children: ReactNode }) => {
       userId: Number(process.env.NEXT_PUBLIC_CURRENT_SELECTED_USER),
     });
 
-  const buildQuery = (filters: GetUserCharactersQueryParameters) => {
+  const buildCharactersQuery = (filters: GetUserCharactersQueryParameters) => {
     const params = [];
 
     if (filters?.userId) {
@@ -79,32 +94,20 @@ export const RickAndMortyProvider = ({ children }: { children: ReactNode }) => {
       `;
   };
 
-  const query = useMemo(() => buildQuery(currentFilters), [currentFilters]);
+  const charactersQuery = useMemo(
+    () => buildCharactersQuery(currentFilters),
+    [currentFilters]
+  );
 
   const [userCharacters, setUserCharacters] = useState<UserCharacter[]>([]);
 
   useEffect(() => {
-    const getUserCharacters = async (query: string) => {
-      const request = await fetch('http://localhost:4000/api', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
-        },
-        body: JSON.stringify({ query }),
-      });
-
-      return await request.json();
-    };
-
-    if (query) {
-      console.log('query', query);
-      getUserCharacters(query).then((data) => {
-        console.log('data', data);
+    if (charactersQuery) {
+      callGraphqlApi(charactersQuery).then((data) => {
         setUserCharacters(data.data.charactersByUser);
       });
     }
-  }, [query]);
+  }, [charactersQuery]);
 
   const updateFilters = (filters: GetUserCharactersQueryParameters) => {
     setCurrentFilters(filters);
@@ -114,6 +117,28 @@ export const RickAndMortyProvider = ({ children }: { children: ReactNode }) => {
     setSelectedUserCharacter(userCharacter);
   };
 
+  const refetchCharacters = () => {
+    callGraphqlApi(charactersQuery).then((data) => {
+      setUserCharacters(data.data.charactersByUser);
+      if (selectedUserCharacter?.id) {
+        const selectedCharacter = data.data.charactersByUser.find(
+          (c: UserCharacter) => c.id === selectedUserCharacter.id
+        );
+        selectUserCharacter(selectedCharacter);
+      }
+    });
+  };
+
+  const changeFavorite = (userCharacterId: string, isFavorite: boolean) => {
+    callGraphqlApi(`
+      mutation ChangeCharacterFavorite {
+        changeCharacterFavorite(userCharacterId: ${userCharacterId}, isFavorite: ${isFavorite})
+    }
+    `).then(() => {
+      refetchCharacters();
+    });
+  };
+
   return (
     <RickAndMortyContext.Provider
       value={{
@@ -121,6 +146,8 @@ export const RickAndMortyProvider = ({ children }: { children: ReactNode }) => {
         userCharacters,
         selectedUserCharacter,
         selectUserCharacter,
+        refetchCharacters,
+        changeFavorite,
       }}
     >
       {children}
